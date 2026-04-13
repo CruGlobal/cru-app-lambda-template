@@ -12,7 +12,8 @@ can be created using the [Add Cru App Environment](https://github.com/CruGlobal/
 The template application uses TypeScript and esbuild to bundle the code into a single file. Update the project name and
 description in `package.json` to match your application.
 
-Builds and Deployments are managed by [build-deploy-lambda.yml](https://github.com/CruGlobal/cru-app-lambda-template/blob/main/.github/workflows/build-deploy-lambda.yml) GitHub workflow.
+Builds and Deployments are managed by [build-deploy-lambda.yml](https://github.com/CruGlobal/cru-app-lambda-template/blob/main/.github/workflows/build-deploy-lambda.yml) GitHub workflow and disabled by default. You can
+enable them by uncommenting, or adding, a valid branch name to the `on: push: branches:` section.
 The Build process executes the `build.sh` file which is responsible for building a Docker container. After a successful
 build, the Deployment process triggers a deployment of the Application in the [cru-deploy](https://github.com/CruGlobal/cru-deploy/actions/workflows/deploy-lambda.yml) GitHub repository.
 The build and deployment process will fail until the Terraform for the application environment has been applied. You can
