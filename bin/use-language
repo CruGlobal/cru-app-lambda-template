@@ -1,0 +1,41 @@
+#!/usr/bin/env bash
+# Activate one language for this Cru app.
+#
+#   bin/use-language <nodejs|ruby|python>
+#
+# Copies the chosen stack from stacks/<lang>/ to the repo root (Dockerfile,
+# build.sh, .tool-versions, dependency manifest, and a minimal app that already
+# answers the health check), then removes the other stacks so the repo holds
+# exactly one language. Run this ONCE near the start of a new app, then commit.
+# See CLAUDE.md.
+set -euo pipefail
+
+lang="${1:-}"
+root="$(cd "$(dirname "$0")/.." && pwd)"
+cd "$root"
+
+case "$lang" in
+  nodejs | ruby | python) ;;
+  *)
+    echo "Usage: bin/use-language <nodejs|ruby|python>" >&2
+    exit 1
+    ;;
+esac
+
+if [ ! -d "stacks/$lang" ]; then
+  echo "No stack for '$lang'. (Already activated? stacks/ is removed after activation.)" >&2
+  exit 1
+fi
+
+echo "→ Activating the $lang stack…"
+# Copy everything in the stack — including dotfiles like .tool-versions.
+cp -R "stacks/$lang/." .
+
+echo "→ Removing stacks/ and this script (one language now lives at the root)…"
+rm -rf stacks
+rm -f bin/use-language
+rmdir bin 2>/dev/null || true
+
+echo "✓ Done — the repo root now holds your $lang app."
+echo "  Next: review the files and commit. See CLAUDE.md to run it locally and"
+echo "  deploy (open a PR off main, then add the 'On Staging' label)."

@@ -1,21 +1,40 @@
-# Cru App Lambda Template
-This is a template for a basic Cru Application using the AWS Lambda service. It includes the necessary configuration to build
-and deploy the application to AWS Lambda using the [aws/lambda/app](https://github.com/CruGlobal/cru-terraform-modules/blob/main/aws/lambda/app/README.md) Terraform module.
+# My Cru App
 
-## Bootstrap new Cru App
-You can bootstrap a new GitHub repository and Cru Application using the [Add Cru Application](https://github.com/CruGlobal/cru-terraform/actions/workflows/cru-application.yml) GitHub workflow.
-Click the `Run workflow` button and follow the prompts. This will create a Terraform Pull Request that when applied,
-will create a new GitHub Repository using this template. Subsequent application environments (`production` or `staging`)
-can be created using the [Add Cru App Environment](https://github.com/CruGlobal/cru-terraform/actions/workflows/cru-application-env.yml) GitHub workflow.
+> Replace this with a sentence describing what your app does.
 
-## Usage
-The template application uses TypeScript and esbuild to bundle the code into a single file. Update the project name and
-description in `package.json` to match your application.
+A Cru application that runs on AWS Lambda.
 
-Builds and Deployments are managed by [build-deploy-lambda.yml](https://github.com/CruGlobal/cru-app-lambda-template/blob/main/.github/workflows/build-deploy-lambda.yml) GitHub workflow and disabled by default. You can
-enable them by uncommenting, or adding, a valid branch name to the `on: push: branches:` section.
-The Build process executes the `build.sh` file which is responsible for building a Docker container. After a successful
-build, the Deployment process triggers a deployment of the Application in the [cru-deploy](https://github.com/CruGlobal/cru-deploy/actions/workflows/deploy-lambda.yml) GitHub repository.
-The build and deployment process will fail until the Terraform for the application environment has been applied. You can
-comment out specific [branches](https://github.com/CruGlobal/cru-app-lambda-template/blob/main/.github/workflows/build-deploy-lambda.yml#L6-L8) to reduce the build failure noise until specific environments are ready.
-Terraform is responsible for creating the permissions which GitHub uses to access the AWS Lambda service.
+## Getting started
+
+This repo starts from Cru's Lambda template and isn't tied to a language yet.
+Pick one to begin:
+
+```bash
+bin/use-language nodejs   # or: ruby | python
+```
+
+That sets up a minimal Lambda **handler** you can build on. A Lambda handler is
+invoked by an event (API Gateway, SQS, an EventBridge schedule, etc.) and
+returns a result — there's no port to listen on or health URL to serve. Then,
+depending on the language you chose:
+
+| Language | Install            | Handler                          |
+| -------- | ------------------ | -------------------------------- |
+| nodejs   | `npm install`      | `src/index.ts` → `handler`       |
+| python   | `pip install -r requirements.txt` | `handler.py` → `handler`         |
+| ruby     | `bundle install`   | `handler.rb` → `handler`         |
+
+Each handler returns `{ statusCode: 200, body: '{"status":"ok"}' }`. Build on
+it, then test by invoking the handler with a sample event (see CLAUDE.md).
+
+## Deploying
+
+Open a pull request off `main`, then add the **`On Staging`** label to deploy
+to staging; merge to `main` to deploy to production. See
+**[QUICK_START.md](./QUICK_START.md)** for provisioning (TerraBloks), the Cru
+CLI, and enabling builds.
+
+## For coding agents
+
+See **[CLAUDE.md](./CLAUDE.md)** — it explains how this repo is wired and how to
+work in it safely.
