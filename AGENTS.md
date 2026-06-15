@@ -94,6 +94,18 @@ builds fail by design — that's expected, not a bug to chase.
 
 Watch a run with the GitHub CLI: `gh run watch` (or check the Actions tab).
 
+## Tests & CI
+
+`bin/use-language` also writes `.github/workflows/ci.yml` — a check that runs
+on every pull request: it installs dependencies, builds / syntax-checks the
+app, and runs your tests if there are any (so a fresh repo stays green). Add
+real tests as the app grows; the workflow runs them automatically once they
+exist.
+
+To actually *block* merges (and dependabot auto-merge) until CI passes, mark
+the **CI** check **required** in the repo's branch-protection ruleset — that's
+configured via TerraBloks / `cru-terraform`, not in this repo.
+
 ## Infrastructure & secrets
 
 - **Provisioning** (the Lambda function, its IAM role, secrets, and the GitHub

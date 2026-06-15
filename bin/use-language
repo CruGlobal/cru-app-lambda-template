@@ -5,10 +5,10 @@
 #
 # Copies the chosen stack from stacks/<lang>/ to the repo root (Dockerfile,
 # build.sh, .tool-versions, dependency manifest, and a minimal app that already
-# answers the health check), writes a matching .github/dependabot.yml for that
-# language, then removes the other stacks so the repo holds exactly one
-# language. Run this ONCE near the start of a new app, then commit. See
-# AGENTS.md.
+# answers the health check), writes a matching .github/dependabot.yml and a
+# PR-triggered .github/workflows/ci.yml for that language, then removes the
+# other stacks so the repo holds exactly one language. Run this ONCE near the
+# start of a new app, then commit. See AGENTS.md.
 set -euo pipefail
 
 lang="${1:-}"
@@ -87,6 +87,96 @@ updates:
       prefix: "docker"
       include: "scope"
 EOF
+
+# Write a PR-triggered CI check for this app. It installs deps, builds /
+# syntax-checks (passes on the starter), and runs tests only if present, so a
+# fresh repo stays green. Mark the "CI" check required in the repo's
+# branch-protection ruleset to gate merges (and dependabot auto-merge) on it.
+echo "→ Writing .github/workflows/ci.yml for ${lang}…"
+mkdir -p .github/workflows
+case "$lang" in
+  nodejs)
+    cat > .github/workflows/ci.yml <<'YAML'
+name: CI
+# Runs on every pull request. To gate merges (and dependabot auto-merge) on it,
+# mark the "CI" check required in your branch-protection ruleset (configured
+# via TerraBloks / cru-terraform).
+on:
+  pull_request:
+
+jobs:
+  test:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version-file: .tool-versions
+      - name: Install dependencies
+        run: npm ci || npm install
+      - name: Build
+        run: npm run build --if-present
+      - name: Test
+        run: npm test --if-present
+YAML
+    ;;
+  python)
+    cat > .github/workflows/ci.yml <<'YAML'
+name: CI
+# Runs on every pull request. To gate merges (and dependabot auto-merge) on it,
+# mark the "CI" check required in your branch-protection ruleset (configured
+# via TerraBloks / cru-terraform).
+on:
+  pull_request:
+
+jobs:
+  test:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - name: Read Python version from .tool-versions
+        id: pyver
+        run: echo "version=$(awk '$1=="python"{print $2}' .tool-versions)" >> "$GITHUB_OUTPUT"
+      - uses: actions/setup-python@v5
+        with:
+          python-version: ${{ steps.pyver.outputs.version }}
+      - name: Install dependencies
+        run: pip install -r requirements.txt
+      - name: Syntax check
+        run: python -m compileall -q .
+      - name: Test
+        if: ${{ hashFiles('tests/**', '**/test_*.py', '**/*_test.py') != '' }}
+        run: |
+          pip install pytest
+          python -m pytest
+YAML
+    ;;
+  ruby)
+    cat > .github/workflows/ci.yml <<'YAML'
+name: CI
+# Runs on every pull request. To gate merges (and dependabot auto-merge) on it,
+# mark the "CI" check required in your branch-protection ruleset (configured
+# via TerraBloks / cru-terraform).
+on:
+  pull_request:
+
+jobs:
+  test:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: ruby/setup-ruby@v1
+        with:
+          bundler-cache: true
+      - name: Syntax check
+        run: |
+          for f in $(git ls-files '*.rb' '*.ru'); do ruby -c "$f"; done
+      - name: Test
+        if: ${{ hashFiles('test/**', 'spec/**') != '' }}
+        run: bundle exec rake test
+YAML
+    ;;
+esac
 
 echo "→ Removing stacks/ and this script (one language now lives at the root)…"
 rm -rf stacks
