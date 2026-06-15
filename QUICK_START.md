@@ -1,7 +1,7 @@
 # Quick Start — Cru App on AWS Lambda
 
 How a Cru application built from this template is provisioned, built, and
-deployed. If you're a coding agent, read **[CLAUDE.md](./CLAUDE.md)** first —
+deployed. If you're a coding agent, read **[AGENTS.md](./AGENTS.md)** first —
 it covers day-to-day work; this file covers the platform around it.
 
 ## 1. Pick a language
@@ -17,7 +17,7 @@ Lambda **handler** with a `Dockerfile`, `build.sh`, `.tool-versions`, and a
 dependency manifest — and removes the rest. These are Lambda handlers, not web
 servers: each is invoked by an event and returns a result, not a long-running
 process listening on a port. Commit the result, then build your app on top of
-it. (See [CLAUDE.md](./CLAUDE.md) for the per-language run commands.)
+it. (See [AGENTS.md](./AGENTS.md) for the per-language run commands.)
 
 ## 2. Provision the application (TerraBloks)
 
@@ -80,7 +80,7 @@ Run `cru --help` for the full command set.
 
 ## Reference
 
-- **[CLAUDE.md](./CLAUDE.md)** — how coding agents should work in this repo.
+- **[AGENTS.md](./AGENTS.md)** — how coding agents should work in this repo.
 - [`cru-terraform`](https://github.com/CruGlobal/cru-terraform) — infrastructure as code.
 - [`cru-deploy`](https://github.com/CruGlobal/cru-deploy) — where deployments run.
 - [aws/lambda/app Terraform module](https://github.com/CruGlobal/cru-terraform-modules/blob/main/aws/lambda/app/README.md)

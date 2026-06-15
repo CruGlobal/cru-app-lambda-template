@@ -25,7 +25,7 @@ depending on the language you chose:
 | ruby     | `bundle install`   | `handler.rb` → `handler`         |
 
 Each handler returns `{ statusCode: 200, body: '{"status":"ok"}' }`. Build on
-it, then test by invoking the handler with a sample event (see CLAUDE.md).
+it, then test by invoking the handler with a sample event (see AGENTS.md).
 
 ## Deploying
 
@@ -36,5 +36,5 @@ CLI, and enabling builds.
 
 ## For coding agents
 
-See **[CLAUDE.md](./CLAUDE.md)** — it explains how this repo is wired and how to
+See **[AGENTS.md](./AGENTS.md)** — it explains how this repo is wired and how to
 work in it safely.
