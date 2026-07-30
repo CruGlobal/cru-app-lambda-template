@@ -3,11 +3,9 @@ name: Build & Deploy Lambda
 on:
   push:
     branches:
-      # Disable build/deploy by using an unknown branch name for new repos.
-      # Remove this and uncomment main/staging below to enable builds/deploys.
-      - disabled_deploy
-      # - main
-      # - staging
+      # Automatically build and deploy main and staging. Additional branches may be added.
+      - main
+      - staging
   # Allows manual build and deploy of any branch/ref
   workflow_dispatch:
     # Allows manual build and deploy of any branch/ref
